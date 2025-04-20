@@ -412,9 +412,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frogObject: {fileID: 2124405947}
   tongueScope: {fileID: 120824408}
-  tongueMaxSize: 5
   tongueLineRenderer: {fileID: 2124405949}
+  tongueMaxSize: 5
   tongueSpeed: 1
+  catchDuration: 0.2
+  catchStartOffset: 0.01
 --- !u!1 &2124405947 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8214969160863093925, guid: 3dab6e5f6bf8d5b44baeefe4aad4a29d, type: 3}

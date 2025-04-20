@@ -13,7 +13,7 @@ public class InputSetup : MonoBehaviour
             Debug.Log("Gamepad count is 0");
             return;
         }
-        player.InputController = Gamepad.all[0];
+        player.inputController = Gamepad.all[0];
     }
 
     // Update is called once per frame

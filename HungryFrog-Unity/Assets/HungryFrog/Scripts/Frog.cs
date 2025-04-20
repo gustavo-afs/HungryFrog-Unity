@@ -1,137 +1,123 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Utilities;
-using UnityEngine.Serialization;
 
 public class Frog : MonoBehaviour
 {
-    public Gamepad InputController;
-    private Vector3 tonguePosition;
-    bool isCatching = false;
-    bool isTongueReleasing = false;
-    
-    [SerializeField]
-    private GameObject frogObject;
-    [SerializeField]
-    private GameObject tongueScope;
-    [SerializeField]
-    private float tongueMaxSize = 4f;
-    [SerializeField]
-    private LineRenderer tongueLineRenderer;
-    [SerializeField]
-    private float tongueSpeed = 1f;
-    [SerializeField]
-    private float catchTimeCounter = 0.5f;
-    [SerializeField]
-    private float catchOffsetStart = 0.01f;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [Header("Input")]
+    public Gamepad inputController;
 
-    // Update is called once per frame
+    [Header("Frog References")]
+    [SerializeField] private GameObject frogObject;
+    [SerializeField] private GameObject tongueScope;
+    [SerializeField] private LineRenderer tongueLineRenderer;
+
+    [Header("Tongue Settings")]
+    [SerializeField] private float tongueMaxSize = 4f;
+    [SerializeField] private float tongueSpeed = 1f;
+    [SerializeField] private float catchDuration = 0.5f;
+    [SerializeField] private float catchStartOffset = 0.01f;
+
+    private Vector3 tongueTargetPosition;
+    private bool isCatching = false;
+    private bool isTongueReleasing = false;
+
     void Update()
     {
-        if (InputController != null)
+        if (inputController == null)
         {
-            if (!isTongueReleasing)
-            {
-                Vector2 leftStickValues = InputController.leftStick.ReadValue();
-                RotateFrog(leftStickValues);
-                MoveFrogScope(leftStickValues);
-                if (InputController.crossButton.wasPressedThisFrame)
-                {
-                    isTongueReleasing = true;
-                    StartCoroutine(TongueAnimation());
-                }
-            }
+            Debug.LogWarning($"{nameof(Frog)}: No controller assigned");
+            return;
         }
-        else
+
+        if (isTongueReleasing) return;
+
+        Vector2 leftStick = inputController.leftStick.ReadValue();
+
+        RotateFrog(leftStick);
+        MoveTongueScope(leftStick);
+
+        if (inputController.crossButton.wasPressedThisFrame)
         {
-            Debug.Log("No controller assigned");
+            isTongueReleasing = true;
+            StartCoroutine(TongueAnimation());
         }
     }
 
-    void RotateFrog(Vector2 inputValues)
+    #region Frog Movement
+
+    private void RotateFrog(Vector2 input)
     {
-        if (inputValues.sqrMagnitude < 0.01f)
-        {
-            return;
-        }
-        
-        float angle = Mathf.Atan2(inputValues.y, inputValues.x) * Mathf.Rad2Deg;
+        if (input.sqrMagnitude < 0.01f) return;
+
+        float angle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
         frogObject.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
-    void MoveFrogScope(Vector2 inputValues)
+    private void MoveTongueScope(Vector2 input)
     {
-        if (inputValues.sqrMagnitude > 0.01f)
-        {
-            float distance = inputValues.magnitude * tongueMaxSize;
-            tonguePosition = Vector3.right * distance;
-        }
-        else
-        {
-            tonguePosition = transform.position;
-        }
+        tongueTargetPosition = input.sqrMagnitude > 0.01f 
+            ? Vector3.right * (input.magnitude * tongueMaxSize)
+            : transform.position;
 
-        tongueScope.transform.localPosition = tonguePosition;
+        tongueScope.transform.localPosition = tongueTargetPosition;
     }
 
-    IEnumerator TongueAnimation()
+    #endregion
+
+    #region Tongue Logic
+
+    private IEnumerator TongueAnimation()
     {
-        Debug.Log("ReleaseTongue");
+        Debug.Log($"{nameof(Frog)}: Tongue released");
+
+        float position = 0f;
+        float targetX = tongueTargetPosition.x;
+
         tongueLineRenderer.SetPosition(0, transform.localPosition);
-        float position = 0;
-        tongueLineRenderer.SetPosition(1,Vector3.zero);
+        tongueLineRenderer.SetPosition(1, Vector3.zero);
 
-        var targetTonguePosition = tonguePosition.x;
-
-        
-        
-        while (position < targetTonguePosition) //growing tongue
+        // Extend tongue
+        while (position < targetX)
         {
-            //Debug.Log(position);
-            Vector3 linePosition = new Vector3(position, 0, 0);
-            tongueLineRenderer.SetPosition(1,linePosition);
             position += Time.deltaTime * tongueSpeed;
-            if (targetTonguePosition - position < catchOffsetStart && !isCatching) //start tongue catching
+            tongueLineRenderer.SetPosition(1, new Vector3(position, 0f, 0f));
+
+            if (!isCatching && targetX - position < catchStartOffset)
             {
                 isCatching = true;
                 StartCoroutine(CatchFly());
             }
+
             yield return null;
         }
 
-        while (position > 0) // ungrowing tongue
+        // Retract tongue
+        while (position > 0f)
         {
-            //Debug.Log(position);
             position -= Time.deltaTime * tongueSpeed;
-            Vector3 linePosition = new Vector3(position, 0, 0);
-            tongueLineRenderer.SetPosition(1,linePosition);
+            tongueLineRenderer.SetPosition(1, new Vector3(position, 0f, 0f));
             yield return null;
         }
+
         isTongueReleasing = false;
-        yield return null;
     }
 
-    IEnumerator CatchFly()
+    private IEnumerator CatchFly()
     {
-        Debug.Log("CatchFly");
-        float counter = catchTimeCounter;
-        
-        while(counter > 0)
+        Debug.Log($"{nameof(Frog)}: Catching fly...");
+
+        float timer = catchDuration;
+
+        while (timer > 0f)
         {
-            counter -= Time.deltaTime;
-            Debug.Log(counter + "is catching");
+            timer -= Time.deltaTime;
             yield return null;
         }
+
         isCatching = false;
-        Debug.Log("Not catching");
-        yield return null;
+        Debug.Log($"{nameof(Frog)}: Done catching");
     }
+
+    #endregion
 }
