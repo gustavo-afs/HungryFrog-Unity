@@ -1,16 +1,23 @@
+using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Frog : MonoBehaviour
 {
-    [Header("Input")]
+    [Header("Systems")]
     public Gamepad inputController;
+    [SerializeField] int playerNumber = 1;
+    public ScoreController scoreController;
+    [SerializeField] AudioSource audioSource;
 
     [Header("Frog References")]
     [SerializeField] private GameObject frogObject;
     [SerializeField] private GameObject tongueScope;
     [SerializeField] private LineRenderer tongueLineRenderer;
+    [SerializeField] private GameObject tongueTip;
+    [SerializeField] private AudioClip tongueAudioClip;
 
     [Header("Tongue Settings")]
     [SerializeField] private float tongueMaxSize = 4f;
@@ -26,11 +33,24 @@ public class Frog : MonoBehaviour
     {
         if (inputController == null)
         {
-            Debug.LogWarning($"{nameof(Frog)}: No controller assigned");
+            Debug.LogWarning($"{nameof(this.gameObject.name)}: No controller assigned");
             return;
         }
 
-        if (isTongueReleasing) return;
+        if (inputController.buttonNorth.wasPressedThisFrame)
+        {
+            Application.Quit();
+        }
+
+        if (inputController.buttonEast.wasPressedThisFrame)
+        {
+            scoreController.ResetRequest();
+        }
+
+        if (isTongueReleasing)
+        {
+            return;
+        }
 
         Vector2 leftStick = inputController.leftStick.ReadValue();
 
@@ -48,17 +68,25 @@ public class Frog : MonoBehaviour
 
     private void RotateFrog(Vector2 input)
     {
-        if (input.sqrMagnitude < 0.01f) return;
-
+        if (input.sqrMagnitude < 0.01f)
+        {
+            return;
+        }
         float angle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
         frogObject.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     private void MoveTongueScope(Vector2 input)
     {
-        tongueTargetPosition = input.sqrMagnitude > 0.01f 
-            ? Vector3.right * (input.magnitude * tongueMaxSize)
-            : transform.position;
+        if (input.sqrMagnitude > 0.01f)
+        {
+            float distance = input.magnitude * tongueMaxSize;
+            tongueTargetPosition = Vector3.right * distance;
+        }
+        else
+        {
+            tongueTargetPosition = Vector3.zero;
+        }
 
         tongueScope.transform.localPosition = tongueTargetPosition;
     }
@@ -69,19 +97,22 @@ public class Frog : MonoBehaviour
 
     private IEnumerator TongueAnimation()
     {
-        Debug.Log($"{nameof(Frog)}: Tongue released");
-
         float position = 0f;
         float targetX = tongueTargetPosition.x;
 
-        tongueLineRenderer.SetPosition(0, transform.localPosition);
+        tongueLineRenderer.SetPosition(0, Vector3.zero);
         tongueLineRenderer.SetPosition(1, Vector3.zero);
+
+        audioSource.clip = tongueAudioClip;
+        audioSource.Play();
 
         // Extend tongue
         while (position < targetX)
         {
+            //Debug.Log($"{nameof(Frog)}: Tongue extending");
             position += Time.deltaTime * tongueSpeed;
             tongueLineRenderer.SetPosition(1, new Vector3(position, 0f, 0f));
+            tongueTip.transform.localPosition = new Vector3(position, 0f, 0f);
 
             if (!isCatching && targetX - position < catchStartOffset)
             {
@@ -95,8 +126,10 @@ public class Frog : MonoBehaviour
         // Retract tongue
         while (position > 0f)
         {
+            //Debug.Log($"{nameof(Frog)}: Tongue retracting");
             position -= Time.deltaTime * tongueSpeed;
             tongueLineRenderer.SetPosition(1, new Vector3(position, 0f, 0f));
+            tongueTip.transform.localPosition = new Vector3(position, 0f, 0f);
             yield return null;
         }
 
@@ -105,7 +138,7 @@ public class Frog : MonoBehaviour
 
     private IEnumerator CatchFly()
     {
-        Debug.Log($"{nameof(Frog)}: Catching fly...");
+        //Debug.Log($"{nameof(Frog)}: Catching fly...");
 
         float timer = catchDuration;
 
@@ -116,7 +149,17 @@ public class Frog : MonoBehaviour
         }
 
         isCatching = false;
-        Debug.Log($"{nameof(Frog)}: Done catching");
+        //Debug.Log($"{nameof(Frog)}: Done catching");
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log(collision.gameObject.name);
+        if (collision.gameObject.CompareTag("Fly") && isCatching)
+        {
+            scoreController.IncreaseScore(playerNumber);
+            collision.GetComponent<Fly>().Catched();
+        }
     }
 
     #endregion
