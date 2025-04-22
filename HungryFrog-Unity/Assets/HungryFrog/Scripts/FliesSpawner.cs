@@ -10,7 +10,7 @@ public class FliesSpawner : MonoBehaviour
     [SerializeField] private float radiusSpawnRange = 5f;
     [SerializeField] private float spawnTimeRange = 5f;
     [SerializeField] private float flylifetimeRange = 5f;
-    ObjectPool<GameObject> fliesPool;
+    private ObjectPool<GameObject> fliesPool;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

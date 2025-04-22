@@ -5,20 +5,11 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    
-    /*
-     Must Implement This Button
-        if (inputController.buttonNorth.wasPressedThisFrame)
-        {
-            Application.Quit();
-        } 
-    
-     */
-    ScoreManager scoreManager = new();
-    [SerializeField] TimerManager timerManager;
-    [SerializeField] UIManager uIManager;
-    [SerializeField] InputSetup inputSetup;
-    [SerializeField] FliesSpawner fliesSpawner;
+    private ScoreManager scoreManager = new();
+    [SerializeField] private TimerManager timerManager;
+    [SerializeField] private UIManager uIManager;
+    [SerializeField] private InputSetup inputSetup;
+    [SerializeField] private FliesSpawner fliesSpawner;
     [SerializeField] private Frog[] frogsArray;
     
     [SerializeField] private float timerDuration = 60;
@@ -36,7 +27,6 @@ public class GameManager : MonoBehaviour
         
         timerManager.onTimerUpdate += (timerValue) =>
         {
-            Debug.Log("GameManager: " + timerValue);
             uIManager.UpdateTimer(timerValue);
         };
         
@@ -61,13 +51,15 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         GameStates();
-        
-        //Restart
-        //Quit
     }
 
     void GameStates()
     {
+        //TODO: Improve this state machine
+        //TODO: Add Restart
+        //TODO: Add main screen
+        //TODO: Add Pause
+        //TODO: Add Quit
         switch (gameStateInt)
         {
             //Initialize Input Search

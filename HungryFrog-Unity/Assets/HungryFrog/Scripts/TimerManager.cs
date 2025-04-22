@@ -6,13 +6,11 @@ public class TimerManager : MonoBehaviour
 {
     public event Action onTimerEnded;
     public event Action<float> onTimerUpdate;
-    
     private float defaultTimerDuration;
     private float currentTimer = 0f;
     private bool isTimerRunning = false;
     private Coroutine timerCoroutine;
-
-
+    
     public void StartTimer(float timerDuration)
     {
         defaultTimerDuration = timerDuration;
@@ -40,5 +38,5 @@ public class TimerManager : MonoBehaviour
         onTimerEnded?.Invoke();
     }
     
-    //TODO Implement stop and pause actions
+    //TODO: Implement stop and pause actions
 }

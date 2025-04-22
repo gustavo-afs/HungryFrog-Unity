@@ -1248,7 +1248,7 @@ MonoBehaviour:
   frogsArray:
   - {fileID: 2124405952}
   - {fileID: 355764820}
-  timerDuration: 0
+  timerDuration: 60
 --- !u!4 &1496795994
 Transform:
   m_ObjectHideFlags: 0

@@ -7,10 +7,11 @@ using UnityEngine.Serialization;
 
 public class Frog : MonoBehaviour
 {
+    //TODO: Extract the tongue from this class
     [Header("Systems")]
     public Gamepad inputController;
     public int iDNumber;
-    [SerializeField] AudioSource audioSource;
+    [SerializeField] private AudioSource audioSource;
 
     [Header("Frog References")]
     [SerializeField] private GameObject frogObject;

@@ -8,12 +8,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text[] scoreLabelArray;
     
-    //TODO 
-    // public void InitializeScore(int playersQuantity)
-    // {
-    //     scoreLabelArray = new TMP_Text[playersQuantity];
-    // }
-    
     public void ResetUI(float defaultTime)
     {
         mainPanelText.text = "";
@@ -32,9 +26,7 @@ public class UIManager : MonoBehaviour
     
     public void UpdateTimer(float timeRemaining)
     {
-        Debug.Log("UI Manager: " + timeRemaining);
         timerText.text = Mathf.CeilToInt(timeRemaining).ToString();
-        Debug.Log("UI Manager 2: " + Mathf.CeilToInt(timeRemaining).ToString());
     }
     
     public bool TryUpdateScore(int playerID, int score)
