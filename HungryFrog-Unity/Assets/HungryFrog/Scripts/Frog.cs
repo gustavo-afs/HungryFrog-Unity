@@ -3,13 +3,13 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class Frog : MonoBehaviour
 {
     [Header("Systems")]
     public Gamepad inputController;
-    [SerializeField] int playerNumber = 1;
-    public ScoreController scoreController;
+    public int iDNumber;
     [SerializeField] AudioSource audioSource;
 
     [Header("Frog References")]
@@ -28,23 +28,14 @@ public class Frog : MonoBehaviour
     private Vector3 tongueTargetPosition;
     private bool isCatching = false;
     private bool isTongueReleasing = false;
+    public event Action<int> catchAction;
 
     void Update()
     {
         if (inputController == null)
         {
-            Debug.LogWarning($"{nameof(this.gameObject.name)}: No controller assigned");
+            //Debug.LogWarning($"{nameof(this.gameObject.name)}: No controller assigned");
             return;
-        }
-
-        if (inputController.buttonNorth.wasPressedThisFrame)
-        {
-            Application.Quit();
-        }
-
-        if (inputController.buttonEast.wasPressedThisFrame)
-        {
-            scoreController.ResetRequest();
         }
 
         if (isTongueReleasing)
@@ -157,7 +148,7 @@ public class Frog : MonoBehaviour
         Debug.Log(collision.gameObject.name);
         if (collision.gameObject.CompareTag("Fly") && isCatching)
         {
-            scoreController.IncreaseScore(playerNumber);
+            catchAction(iDNumber);
             collision.GetComponent<Fly>().Catched();
         }
     }
