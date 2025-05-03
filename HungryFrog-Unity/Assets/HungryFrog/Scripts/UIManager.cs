@@ -1,12 +1,45 @@
+using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
+    // UI Toolkit
+    [SerializeField] private GameObject UIToolkitObject;
+    private VisualElement root;
+    private VisualElement mainMenu;
+    private const string mainMenuName = "MainMenu";
+    private VisualElement scorePanel;
+    private const string scorePanelName = "ScorePanel";
+
+    // Legacy UI
     [SerializeField] private TMP_Text mainPanelText;
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text[] scoreLabelArray;
+
+    private void Awake()
+    {
+        root = UIToolkitObject.GetComponent<UIDocument>().rootVisualElement;
+        mainMenu = root.Q(mainMenuName);
+        scorePanel = root.Q(scorePanelName);
+    }
+
+    public void SetEnabledMainMenu(bool enabled)
+    {
+        mainMenu.style.display = enabled ? DisplayStyle.Flex : DisplayStyle.None;
+
+        // Define the focus on the first focusable child element
+        if (enabled && mainMenu.childCount > 0)
+        {
+            mainMenu[0]?.Focus();
+        }
+    }
+
+    public void SetEnabledScorePanel(bool enabled)
+    {
+        scorePanel.style.display = enabled ? DisplayStyle.Flex : DisplayStyle.None;
+    }
     
     public void ResetUI(float defaultTime)
     {

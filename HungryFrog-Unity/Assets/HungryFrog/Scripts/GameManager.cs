@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private InputSetup inputSetup;
     [SerializeField] private FliesSpawner fliesSpawner;
     [SerializeField] private Frog[] frogsArray;
-    
     [SerializeField] private float timerDuration = 60;
     
     bool allControllersReady = false;
@@ -19,6 +18,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        //TODO: Explain what is happening in each part here
         scoreManager.InitializeScore(2);
         timerManager.onTimerEnded += () =>
         {
@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
                 }
             };
         }
-        gameStateInt = 0;
+        gameStateInt = -3;
     }
 
     private void Update()
@@ -57,11 +57,21 @@ public class GameManager : MonoBehaviour
     {
         //TODO: Improve this state machine
         //TODO: Add Restart
-        //TODO: Add main screen
         //TODO: Add Pause
         //TODO: Add Quit
         switch (gameStateInt)
         {
+            case -3:
+                uIManager.SetEnabledMainMenu(true);
+                gameStateInt = -2;
+                break;
+            case -2:
+                //waiting for menu interactions
+                break;
+            case -1:
+                uIManager.SetEnabledMainMenu(false);
+                uIManager.SetEnabledScorePanel(true);
+                break;
             //Initialize Input Search
             case 0:
                 InitializeInputSearch();
