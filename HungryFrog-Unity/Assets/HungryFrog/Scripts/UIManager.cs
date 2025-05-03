@@ -8,29 +8,46 @@ public class UIManager : MonoBehaviour
     // UI Toolkit
     [SerializeField] private GameObject UIToolkitObject;
     private VisualElement root;
+    
     private VisualElement mainMenu;
     private const string mainMenuName = "MainMenu";
+    
     private VisualElement scorePanel;
     private const string scorePanelName = "ScorePanel";
-    private VisualElement startButton;
+    
+    private Button startButton;
     private const string startButtonName = "StartButton";
-    private VisualElement exitButton;
+    
+    private Button exitButton;
     private const string exitButtonName = "ExitButton";
 
+    private Label player1Score;
+    private const string player1ScoreName = "Player1Score";
+    
+    private Label player2Score;
+    private const string player2ScoreName = "Player2Score";
+
+    private Label timer;
+    private const string timerName = "Timer";
+
+    private Label[] scoreLabels;
     // Legacy UI
     [SerializeField] private TMP_Text mainPanelText;
-    [SerializeField] private TMP_Text timerText;
-    [SerializeField] private TMP_Text[] scoreLabelArray;
-
-    
+    //[SerializeField] private TMP_Text timerText;
+    //[SerializeField] private TMP_Text[] scoreLabelArray;
     
     private void Awake()
     {
         root = UIToolkitObject.GetComponent<UIDocument>().rootVisualElement;
         mainMenu = root.Q(mainMenuName);
         scorePanel = root.Q(scorePanelName);
-        startButton = root.Q(startButtonName);
-        exitButton = root.Q(exitButtonName);
+        startButton = (Button)root.Q(startButtonName);
+        exitButton = (Button)root.Q(exitButtonName);
+        player1Score = (Label)root.Q(player1ScoreName);
+        player2Score = (Label)root.Q(player2ScoreName);
+        timer = (Label)scorePanel.Q(timerName);
+        
+        scoreLabels = new []{player1Score, player2Score};
     }
 
     public void InitializeButtons(Action startButtonAction, Action quitButtonAction)
@@ -77,11 +94,11 @@ public class UIManager : MonoBehaviour
     public void ResetUI(float defaultTime)
     {
         mainPanelText.text = "";
-        timerText.text = Mathf.CeilToInt(defaultTime).ToString();
+        timer.text = Mathf.CeilToInt(defaultTime).ToString();
 
-        for (int i = 0; i < scoreLabelArray.Length; i++)
+        for (int i = 0; i < scoreLabels.Length; i++)
         {
-            scoreLabelArray[i].text = "0";
+            scoreLabels[i].text = "0";
         }
     }
     
@@ -92,14 +109,14 @@ public class UIManager : MonoBehaviour
     
     public void UpdateTimer(float timeRemaining)
     {
-        timerText.text = Mathf.CeilToInt(timeRemaining).ToString();
+        timer.text = Mathf.CeilToInt(timeRemaining).ToString();
     }
     
     public bool TryUpdateScore(int playerID, int score)
     {
-        if (playerID >= 0 && playerID < scoreLabelArray.Length)
+        if (playerID >= 0 && playerID < scoreLabels.Length)
         {
-            scoreLabelArray[playerID].text = score.ToString();
+            scoreLabels[playerID].text = score.ToString();
             return true;
         }
         Debug.LogWarning($"Invalid player ID: {playerID}");

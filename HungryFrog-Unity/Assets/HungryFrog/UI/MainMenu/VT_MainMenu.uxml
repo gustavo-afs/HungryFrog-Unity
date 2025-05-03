@@ -7,17 +7,17 @@
                     <engine:VisualElement name="FrogIcon" style="flex-grow: 1; width: 100%; height: 100%; background-image: url(&quot;project://database/Assets/HungryFrog/Art/UI/SPR_UI_FrogIcon.png?fileID=21300000&amp;guid=05dc07fb5437b9741966dd5c00e1ea30&amp;type=3#SPR_UI_FrogIcon&quot;); background-color: rgba(255, 255, 255, 0); background-size: 64% 100%; -unity-background-scale-mode: scale-to-fit; padding-left: 0; margin-left: 3%; max-width: 200px; min-width: 40px;" />
                     <engine:Label text="FROG1" name="FrogTitle" style="font-size: 60%; -unity-text-align: middle-center;" />
                 </engine:VisualElement>
-                <engine:Label text="0" name="Score" style="height: 15%; width: 40%; -unity-text-align: middle-center; font-size: 80%; min-width: 100%; max-width: 450px; min-height: 31%; max-height: 180px;" />
+                <engine:Label text="0" name="Player1Score" style="height: 15%; width: 40%; -unity-text-align: middle-center; font-size: 80%; min-width: 100%; max-width: 450px; min-height: 31%; max-height: 180px;" />
             </engine:VisualElement>
             <engine:VisualElement name="CountDownArea" style="flex-grow: 1; width: 2%; height: 100%;">
-                <engine:Label text="00" name="CountdownText" style="width: 100%; height: 100%; font-size: 100%; -unity-text-align: middle-center;" />
+                <engine:Label text="00" name="Timer" style="width: 100%; height: 100%; font-size: 100%; -unity-text-align: middle-center;" />
             </engine:VisualElement>
             <engine:VisualElement name="P2Area" style="flex-grow: 1; width: 20%; height: 100%; padding-bottom: 15px;">
                 <engine:VisualElement name="Header" style="flex-grow: 1; width: 100%; height: 60%; flex-direction: row; padding-bottom: 0; margin-bottom: 0; margin-top: 2%;">
                     <engine:VisualElement name="FrogIcon" style="flex-grow: 1; width: 100%; height: 100%; background-image: url(&quot;project://database/Assets/HungryFrog/Art/UI/SPR_UI_FrogIcon.png?fileID=21300000&amp;guid=05dc07fb5437b9741966dd5c00e1ea30&amp;type=3#SPR_UI_FrogIcon&quot;); background-color: rgba(255, 255, 255, 0); background-size: 64% 100%; -unity-background-scale-mode: scale-to-fit; padding-left: 0; margin-left: 3%; max-width: 200px; min-width: 40px;" />
                     <engine:Label text="FROG2" name="FrogTitle" style="font-size: 60%; -unity-text-align: middle-center;" />
                 </engine:VisualElement>
-                <engine:Label text="0" name="Score" style="height: 15%; width: 40%; -unity-text-align: middle-center; font-size: 80%; min-width: 100%; max-width: 450px; min-height: 31%; max-height: 180px;" />
+                <engine:Label text="0" name="Player2Score" style="height: 15%; width: 40%; -unity-text-align: middle-center; font-size: 80%; min-width: 100%; max-width: 450px; min-height: 31%; max-height: 180px;" />
             </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>
