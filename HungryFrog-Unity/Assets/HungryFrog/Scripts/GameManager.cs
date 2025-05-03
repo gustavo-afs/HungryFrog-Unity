@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         //TODO: Explain what is happening in each part here
+        
+        uIManager.InitializeButtons((() => gameStateInt = -1), (() => Application.Quit()));
+        
         scoreManager.InitializeScore(2);
         timerManager.onTimerEnded += () =>
         {

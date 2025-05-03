@@ -12,17 +12,40 @@ public class UIManager : MonoBehaviour
     private const string mainMenuName = "MainMenu";
     private VisualElement scorePanel;
     private const string scorePanelName = "ScorePanel";
+    private VisualElement startButton;
+    private const string startButtonName = "StartButton";
+    private VisualElement exitButton;
+    private const string exitButtonName = "ExitButton";
 
     // Legacy UI
     [SerializeField] private TMP_Text mainPanelText;
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text[] scoreLabelArray;
 
+    
+    
     private void Awake()
     {
         root = UIToolkitObject.GetComponent<UIDocument>().rootVisualElement;
         mainMenu = root.Q(mainMenuName);
         scorePanel = root.Q(scorePanelName);
+        startButton = root.Q(startButtonName);
+        exitButton = root.Q(exitButtonName);
+    }
+
+    public void InitializeButtons(Action startButtonAction, Action quitButtonAction)
+    {
+        startButton.RegisterCallback<ClickEvent>(evt =>
+        {
+            startButtonAction();
+            Debug.Log("Clicked StartButton");
+        });
+        
+        exitButton.RegisterCallback<ClickEvent>(evt =>
+        {
+            quitButtonAction();
+            Debug.Log("Clicked QuitButton");
+        });
     }
 
     public void SetEnabledMainMenu(bool enabled)
