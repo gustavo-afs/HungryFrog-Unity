@@ -40,11 +40,21 @@ public class UIManager : MonoBehaviour
             startButtonAction();
             Debug.Log("Clicked StartButton");
         });
-        
+        startButton.RegisterCallback<NavigationSubmitEvent>(evt =>
+        {
+            startButtonAction();
+            Debug.Log("Submitted StartButton");
+        });
+
         exitButton.RegisterCallback<ClickEvent>(evt =>
         {
             quitButtonAction();
             Debug.Log("Clicked QuitButton");
+        });
+        exitButton.RegisterCallback<NavigationSubmitEvent>(evt =>
+        {
+            quitButtonAction();
+            Debug.Log("Submitted QuitButton");
         });
     }
 

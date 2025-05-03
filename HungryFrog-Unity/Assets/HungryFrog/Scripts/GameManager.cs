@@ -12,27 +12,22 @@ public class GameManager : MonoBehaviour
     [SerializeField] private FliesSpawner fliesSpawner;
     [SerializeField] private Frog[] frogsArray;
     [SerializeField] private float timerDuration = 60;
-    
-    bool allControllersReady = false;
+
+    private bool allControllersReady = false;
     private int gameStateInt;
 
     private void Start()
     {
-        //TODO: Explain what is happening in each part here
-        
-        uIManager.InitializeButtons((() => gameStateInt = -1), (() => Application.Quit()));
-        
+        uIManager.InitializeButtons(() => gameStateInt = -1, () => Application.Quit());
+
         scoreManager.InitializeScore(2);
-        timerManager.onTimerEnded += () =>
-        {
-            gameStateInt = 4;
-        };
-        
+        timerManager.onTimerEnded += () => gameStateInt = 4;
+
         timerManager.onTimerUpdate += (timerValue) =>
         {
             uIManager.UpdateTimer(timerValue);
         };
-        
+
         for (int i = 0; i < frogsArray.Length; i++)
         {
             frogsArray[i].iDNumber = i;
@@ -40,8 +35,7 @@ public class GameManager : MonoBehaviour
             {
                 if (scoreManager.TryAddScore(id))
                 {
-                    int actualScore;
-                    if (scoreManager.TryGetScore(id,out actualScore))
+                    if (scoreManager.TryGetScore(id, out int actualScore))
                     {
                         uIManager.TryUpdateScore(id, actualScore);
                     }
@@ -69,14 +63,11 @@ public class GameManager : MonoBehaviour
                 gameStateInt = -2;
                 break;
             case -2:
-                //waiting for menu interactions
+                // Waiting for menu interactions
                 break;
             case -1:
                 uIManager.SetEnabledMainMenu(false);
                 uIManager.SetEnabledScorePanel(true);
-                break;
-            //Initialize Input Search
-            case 0:
                 InitializeInputSearch();
                 gameStateInt = 1;
                 break;
@@ -111,7 +102,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    uIManager.UpdateMainPanelText($"The Winner is the Frog {frog} and Score {score}");
+                    uIManager.UpdateMainPanelText($"The Winner is the Frog {frog} with Score {score}");
                 }
                 break;
         }
