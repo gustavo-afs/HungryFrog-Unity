@@ -4,7 +4,7 @@
 }
 
 .menubutton {
-    font-size: 45%;
+    font-size: 45px;
     width: 40%;
     height: 15%;
     padding: 0 0;
@@ -33,11 +33,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     -unity-text-outline-width: 0;
+    -unity-font-definition: url("project://database/Assets/HungryFrog/UI/Fonts/PressStart2P-Regular.ttf?fileID=12800000&guid=a1e95d42e0b4041408de2330d4ca3282&type=3#PressStart2P-Regular");
 }
 
 .menubutton:focus {
-    font-size: 50%;
+    font-size: 48%;
     color: rgb(255, 255, 255);
     transition-timing-function: ease;
     -unity-background-image-tint-color: rgb(188, 0, 0);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -unity-font-definition: url("project://database/Assets/HungryFrog/UI/Fonts/PressStart2P-Regular.ttf?fileID=12800000&guid=a1e95d42e0b4041408de2330d4ca3282&type=3#PressStart2P-Regular");
 }

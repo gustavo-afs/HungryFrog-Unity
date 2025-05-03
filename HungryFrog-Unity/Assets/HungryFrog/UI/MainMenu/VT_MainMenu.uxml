@@ -1,8 +1,34 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/HungryFrog/UI/MainMenu/USS_MainMenuStyle.uss?fileID=7433441132597879392&amp;guid=093fe54bff085ff44b6d10928c711e69&amp;type=3#USS_MainMenuStyle" />
-    <engine:VisualElement name="Header" style="-unity-font-definition: url(&quot;project://database/Assets/HungryFrog/UI/Fonts/PressStart2P-Regular.ttf?fileID=12800000&amp;guid=a1e95d42e0b4041408de2330d4ca3282&amp;type=3#PressStart2P-Regular&quot;); height: 30%; justify-content: center; align-items: auto; align-self: auto; align-content: auto; width: 100%;" />
-    <engine:VisualElement name="MenuContainer" style="-unity-font-definition: url(&quot;project://database/Assets/HungryFrog/UI/Fonts/PressStart2P-Regular.ttf?fileID=12800000&amp;guid=a1e95d42e0b4041408de2330d4ca3282&amp;type=3#PressStart2P-Regular&quot;); justify-content: center; align-items: auto; height: 100%; width: 100%; font-size: 100%; align-content: auto; -unity-text-align: middle-left; text-overflow: ellipsis;">
+    <engine:VisualElement name="Header" style="-unity-font-definition: url(&quot;project://database/Assets/HungryFrog/UI/Fonts/PressStart2P-Regular.ttf?fileID=12800000&amp;guid=a1e95d42e0b4041408de2330d4ca3282&amp;type=3#PressStart2P-Regular&quot;); height: 20%; justify-content: space-between; align-items: center; align-self: center; align-content: center; width: 100%; color: rgb(255, 255, 255);">
+        <engine:VisualElement name="ScorePanel" style="flex-grow: 1; width: 90%; height: 100%; background-image: url(&quot;project://database/Assets/HungryFrog/Art/UI/SPR_UI_ScorePanel.png?fileID=21300000&amp;guid=94c735b456c8e14449821a602a54a2c1&amp;type=3#SPR_UI_ScorePanel&quot;); flex-direction: row; min-height: 200px; min-width: auto;">
+            <engine:VisualElement name="P1Area" style="flex-grow: 1; width: 20%; height: 100%; padding-bottom: 15px;">
+                <engine:VisualElement name="Header" style="flex-grow: 1; width: 100%; height: 60%; flex-direction: row; padding-bottom: 0; margin-bottom: 0; margin-top: 2%;">
+                    <engine:VisualElement name="FrogIcon" style="flex-grow: 1; width: 100%; height: 100%; background-image: url(&quot;project://database/Assets/HungryFrog/Art/UI/SPR_UI_FrogIcon.png?fileID=21300000&amp;guid=05dc07fb5437b9741966dd5c00e1ea30&amp;type=3#SPR_UI_FrogIcon&quot;); background-color: rgba(255, 255, 255, 0); background-size: 64% 100%; -unity-background-scale-mode: scale-to-fit; padding-left: 0; margin-left: 3%; max-width: 200px; min-width: 40px;" />
+                    <engine:Label text="FROG1" name="FrogTitle" style="font-size: 60%; -unity-text-align: middle-center;" />
+                </engine:VisualElement>
+                <engine:Label text="0" name="Score" style="height: 15%; width: 40%; -unity-text-align: middle-center; font-size: 80%; min-width: 100%; max-width: 450px; min-height: 31%; max-height: 180px;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="CountDownArea" style="flex-grow: 1; width: 2%; height: 100%;">
+                <engine:Label text="00" name="CountdownText" style="width: 100%; height: 100%; font-size: 100%; -unity-text-align: middle-center;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="P2Area" style="flex-grow: 1; width: 20%; height: 100%; padding-bottom: 15px;">
+                <engine:VisualElement name="Header" style="flex-grow: 1; width: 100%; height: 60%; flex-direction: row; padding-bottom: 0; margin-bottom: 0; margin-top: 2%;">
+                    <engine:VisualElement name="FrogIcon" style="flex-grow: 1; width: 100%; height: 100%; background-image: url(&quot;project://database/Assets/HungryFrog/Art/UI/SPR_UI_FrogIcon.png?fileID=21300000&amp;guid=05dc07fb5437b9741966dd5c00e1ea30&amp;type=3#SPR_UI_FrogIcon&quot;); background-color: rgba(255, 255, 255, 0); background-size: 64% 100%; -unity-background-scale-mode: scale-to-fit; padding-left: 0; margin-left: 3%; max-width: 200px; min-width: 40px;" />
+                    <engine:Label text="FROG2" name="FrogTitle" style="font-size: 60%; -unity-text-align: middle-center;" />
+                </engine:VisualElement>
+                <engine:Label text="0" name="Score" style="height: 15%; width: 40%; -unity-text-align: middle-center; font-size: 80%; min-width: 100%; max-width: 450px; min-height: 31%; max-height: 180px;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <engine:VisualElement name="PauseMenu" style="justify-content: center; align-items: auto; height: 80%; width: 100%; display: none; overflow: visible; visibility: visible; align-self: center;">
+        <engine:Button text="Resume" name="Resume" class="button menubutton" />
+        <engine:Button text="Settings" name="Settings" class="button menubutton" />
+        <engine:Button text="Quit" name="Quit" class="button menubutton" />
+    </engine:VisualElement>
+    <engine:VisualElement name="MainMenu" style="justify-content: center; align-items: auto; height: 80%; width: 100%; display: none;">
         <engine:Button text="Start" name="Start" class="button menubutton" />
+        <engine:Button text="Settings" name="Settings" class="button menubutton" />
         <engine:Button text="Exit" name="Exit" class="button menubutton" />
     </engine:VisualElement>
 </engine:UXML>
