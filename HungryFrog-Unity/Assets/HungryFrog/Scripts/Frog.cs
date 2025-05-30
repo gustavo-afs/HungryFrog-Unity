@@ -1,15 +1,15 @@
 using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 public class Frog : MonoBehaviour
 {
     //TODO: Extract the tongue from this class
     [Header("Systems")]
-    public Gamepad inputController;
+    private InputAction moveAction;
+    private InputAction fireTongueAction;
+    private PlayerInput playerInput;
     public int iDNumber;
     [SerializeField] private AudioSource audioSource;
 
@@ -33,23 +33,38 @@ public class Frog : MonoBehaviour
 
     void Update()
     {
-        if (inputController == null)
-        {
-            //Debug.LogWarning($"{nameof(this.gameObject.name)}: No controller assigned");
-            return;
-        }
-
         if (isTongueReleasing)
         {
             return;
         }
 
-        Vector2 leftStick = inputController.leftStick.ReadValue();
+        // Vector2 leftStick = inputController.leftStick.ReadValue();
+        //
+        // RotateFrog(leftStick);
+        // MoveTongueScope(leftStick);
+        //
+        // if (inputController.crossButton.wasPressedThisFrame)
+        // {
+        //     isTongueReleasing = true;
+        //     StartCoroutine(TongueAnimation());
+        // }
+    }
 
-        RotateFrog(leftStick);
-        MoveTongueScope(leftStick);
+    private void OnMove(InputAction.CallbackContext context)
+    {
+        Vector2 moveInput = context.ReadValue<Vector2>();
+        RotateFrog(moveInput);
+        MoveTongueScope(moveInput);
+    }
 
-        if (inputController.crossButton.wasPressedThisFrame)
+    private void OnMoveStop(InputAction.CallbackContext context)
+    {
+        MoveTongueScope(Vector2.zero); // Reseta a posição
+    }
+
+    private void OnFire(InputAction.CallbackContext context)
+    {
+        if (!isTongueReleasing)
         {
             isTongueReleasing = true;
             StartCoroutine(TongueAnimation());
@@ -101,7 +116,6 @@ public class Frog : MonoBehaviour
         // Extend tongue
         while (position < targetX)
         {
-            //Debug.Log($"{nameof(Frog)}: Tongue extending");
             position += Time.deltaTime * tongueSpeed;
             tongueLineRenderer.SetPosition(1, new Vector3(position, 0f, 0f));
             tongueTip.transform.localPosition = new Vector3(position, 0f, 0f);
@@ -118,7 +132,6 @@ public class Frog : MonoBehaviour
         // Retract tongue
         while (position > 0f)
         {
-            //Debug.Log($"{nameof(Frog)}: Tongue retracting");
             position -= Time.deltaTime * tongueSpeed;
             tongueLineRenderer.SetPosition(1, new Vector3(position, 0f, 0f));
             tongueTip.transform.localPosition = new Vector3(position, 0f, 0f);
@@ -130,8 +143,6 @@ public class Frog : MonoBehaviour
 
     private IEnumerator CatchFly()
     {
-        //Debug.Log($"{nameof(Frog)}: Catching fly...");
-
         float timer = catchDuration;
 
         while (timer > 0f)
@@ -141,7 +152,6 @@ public class Frog : MonoBehaviour
         }
 
         isCatching = false;
-        //Debug.Log($"{nameof(Frog)}: Done catching");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -155,4 +165,18 @@ public class Frog : MonoBehaviour
     }
 
     #endregion
+
+    public void SetupFrog(PlayerInput playerInputComponent)
+    {
+        playerInput = playerInputComponent;
+        moveAction = playerInput.actions["Move"];
+        fireTongueAction = playerInput.actions["FireTongue"];
+
+        moveAction.performed += OnMove;
+        moveAction.canceled += OnMoveStop;
+        fireTongueAction.performed += OnFire;
+
+        moveAction.Enable();
+        fireTongueAction.Enable();
+    }
 }

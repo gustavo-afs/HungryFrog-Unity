@@ -1,7 +1,6 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,15 +11,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private FliesSpawner fliesSpawner;
     [SerializeField] private Frog[] frogsArray;
     [SerializeField] private float timerDuration = 60;
-
-    private bool allControllersReady = false;
+    [SerializeField] private InputActionAsset inputActionAsset;
+    
     private int gameStateInt;
-
+    
     private void Start()
     {
         uIManager.InitializeButtons(() => gameStateInt = -1, () => Application.Quit());
 
-        scoreManager.InitializeScore(2);
+        scoreManager.InitializeScore(frogsArray.Length);
         timerManager.onTimerEnded += () => gameStateInt = 4;
 
         timerManager.onTimerUpdate += (timerValue) =>
@@ -68,16 +67,9 @@ public class GameManager : MonoBehaviour
             case -1:
                 uIManager.SetEnabledMainMenu(false);
                 uIManager.SetEnabledScorePanel(true);
-                InitializeInputSearch();
+                inputSetup.OnAllPlayersReady += AssignPlayerInputsToFrogs;
+                inputSetup.StartInputSearching(frogsArray.Length);
                 gameStateInt = 1;
-                break;
-            //Waiting InputSearch;
-            case 1:
-                if (allControllersReady)
-                {
-                    FinalizeInputSearch();
-                    gameStateInt = 2;
-                }
                 break;
             //StartGame
             case 2:
@@ -108,53 +100,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void InitializeInputSearch()
+    private void AssignPlayerInputsToFrogs(List<GameObject> playersInput)
     {
-        inputSetup.StartInputSearching();
-        inputSetup.OnPlayerJoined += AssignInputs;
-        inputSetup.OnPlayerLeft += RemoveInputs;
-    }
-
-    private void FinalizeInputSearch()
-    {
+        for (int i = 0; i < frogsArray.Length; i++)
+        {
+            playersInput[i].transform.SetParent(frogsArray[i].transform);
+            frogsArray[i].SetupFrog(playersInput[i].GetComponent<PlayerInput>());
+        }
         inputSetup.StopInputSearching();
-        inputSetup.OnPlayerJoined -= AssignInputs;
-        inputSetup.OnPlayerLeft -= RemoveInputs;
-    }
-
-    private void AssignInputs(Gamepad gamepad)
-    {
-        for (int i = 0; i < frogsArray.Length; i++)
-        {
-            if (frogsArray[i].inputController == null)
-            {
-                frogsArray[i].inputController = gamepad;
-                ValidateAllInputs();
-                return;
-            }
-        }
-    }
-    
-    private void RemoveInputs(Gamepad gamepad)
-    {
-        for (int i = 0; i < frogsArray.Length; i++)
-        {
-            if (frogsArray[i].inputController == gamepad)
-            {
-                frogsArray[i].inputController = null;
-            }
-        }
-    }
-
-    private void ValidateAllInputs()
-    {
-        for (int i = 0; i < frogsArray.Length; i++)
-        {
-            if (frogsArray[i].inputController == null)
-            {
-                return;
-            }
-        }
-        allControllersReady = true;
+        inputSetup.OnAllPlayersReady -= AssignPlayerInputsToFrogs;
+        gameStateInt = 2;
     }
 }

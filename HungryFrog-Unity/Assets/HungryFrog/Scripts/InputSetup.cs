@@ -1,48 +1,108 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class InputSetup : MonoBehaviour
 {
-    public event Action<Gamepad> OnPlayerJoined;
-    public event Action<Gamepad> OnPlayerLeft;
-    private HashSet<Gamepad> assignedGamepads = new HashSet<Gamepad>();
-    private Coroutine searchingInput;
-
-    public void StartInputSearching()
+    private GameInputs input;
+    private List<PlayerInput> playerInputs = new List<PlayerInput>();
+    [SerializeField] private GameObject playerInputPrefab;
+    private int playersCount;
+    public event Action<List<GameObject>> OnAllPlayersReady;
+    
+    public void Awake()
     {
-        StopInputSearching();
-        searchingInput= StartCoroutine(SearchingInput());
+        input = new GameInputs();
+        input.Lobby.ToggleJoin.performed += OnToggleJoinPerformed;
+    }
+
+    private void OnDisable()
+    {   
+        input.Lobby.ToggleJoin.performed -= OnToggleJoinPerformed;
+        input.Dispose();
+    }
+
+    private void OnToggleJoinPerformed(InputAction.CallbackContext callbackContext)
+    {
+        var device = callbackContext.control.device;
+
+        PlayerInput playerInput;
+        
+        if (IsDeviceAssigned(device, out playerInput))
+        {
+            UnpairDevice(playerInput);
+        }
+        else
+        {
+            PairDevice(device);
+        }
+    }
+
+    private void PairDevice(InputDevice device)
+    {
+        var playerInput = PlayerInput.Instantiate(playerInputPrefab, pairWithDevice: device);
+        if (playerInput.user.valid)
+        {
+            playerInputs.Add(playerInput);
+            ValidateInputs();
+        }
+        else
+        {
+            Destroy(playerInput.gameObject);
+        }
+    }
+
+    private void ValidateInputs()
+    {
+        if (playerInputs.Count == playersCount)
+        {
+            List<GameObject> allPlayers = new List<GameObject>();
+            foreach (var player in playerInputs)
+            {
+                allPlayers.Add(player.gameObject);
+            }
+            OnAllPlayersReady?.Invoke(allPlayers);
+        }
+    }
+
+    private void UnpairDevice(PlayerInput playerInput)
+    {
+        Destroy(playerInput.gameObject);
+        playerInputs.Remove(playerInput);
+    }
+
+    private bool IsDeviceAssigned(InputDevice device, out PlayerInput assignedPlayerInput)
+    {
+        assignedPlayerInput = null;
+        
+        if (playerInputs.Count == 0)
+        {
+            return false;
+        }
+        
+        foreach (var playerInput in playerInputs)
+        {
+            foreach (var playerInputDevice in playerInput.devices)
+            {
+                if (playerInputDevice == device)
+                {
+                    assignedPlayerInput = playerInput;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void StartInputSearching(int playerCountInput)
+    {
+        playersCount = playerCountInput;
+        input.Lobby.Enable();
     }
 
     public void StopInputSearching()
     {
-        if (searchingInput != null)
-        {
-            StopCoroutine(searchingInput);
-        }
-    }
-
-    IEnumerator SearchingInput()
-    {
-        while (true)
-        {
-            foreach (var gamepad in Gamepad.all)
-            {
-                if (gamepad.buttonSouth.wasPressedThisFrame && !assignedGamepads.Contains(gamepad))
-                {
-                    assignedGamepads.Add(gamepad);
-                    OnPlayerJoined?.Invoke(gamepad);
-                }
-                else if(gamepad.buttonEast.wasPressedThisFrame && assignedGamepads.Contains(gamepad))
-                {
-                    assignedGamepads.Remove(gamepad);
-                    OnPlayerLeft?.Invoke(gamepad);
-                }
-            }
-            yield return null;
-        }
+        input.Lobby.Disable();
     }
 }

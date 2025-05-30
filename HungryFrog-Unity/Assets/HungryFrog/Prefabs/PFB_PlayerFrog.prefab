@@ -458,8 +458,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 394a83f0caec88c48bd0fca44050e030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNumber: 1
-  scoreController: {fileID: 0}
+  playerInput: {fileID: 0}
+  iDNumber: 0
   audioSource: {fileID: 8154648616386734816}
   frogObject: {fileID: 8214969160863093925}
   tongueScope: {fileID: 7018458009718217673}
