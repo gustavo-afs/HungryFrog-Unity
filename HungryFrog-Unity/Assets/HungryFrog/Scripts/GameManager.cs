@@ -17,11 +17,9 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        uIManager.InitializeButtons(() => gameStateInt = -1, () => Application.Quit());
-
+        uIManager.InitializeButtons(() => gameStateInt = -1, () => Application.Quit(), () => gameStateInt = 2, () => gameStateInt = -3);
         scoreManager.InitializeScore(frogsArray.Length);
         timerManager.onTimerEnded += () => gameStateInt = 4;
-
         timerManager.onTimerUpdate += (timerValue) =>
         {
             uIManager.UpdateTimer(timerValue);
@@ -52,13 +50,13 @@ public class GameManager : MonoBehaviour
     void GameStates()
     {
         //TODO: Improve this state machine
-        //TODO: Add Restart
         //TODO: Add Pause
-        //TODO: Add Quit
         switch (gameStateInt)
         {
             case -3:
+                uIManager.SetEnabledResultPanel(text: "",enabled: false);
                 uIManager.SetEnabledMainMenu(true);
+                inputSetup.SetupPlayerInputs(frogsArray.Length);
                 gameStateInt = -2;
                 break;
             case -2:
@@ -66,16 +64,27 @@ public class GameManager : MonoBehaviour
                 break;
             case -1:
                 uIManager.SetEnabledMainMenu(false);
-                uIManager.SetEnabledScorePanel(true);
+                if (inputSetup.AreControllersReady())
+                {
+                    gameStateInt = 2;
+                    break;
+                }
                 inputSetup.OnAllPlayersReady += AssignPlayerInputsToFrogs;
-                inputSetup.StartInputSearching(frogsArray.Length);
-                gameStateInt = 1;
+                inputSetup.StartInputSearching();
+                gameStateInt = 0;
                 break;
             //StartGame
             case 2:
+                uIManager.SetEnabledScorePanel(true);
+                uIManager.SetEnabledResultPanel(text: "",enabled: false);
                 uIManager.ResetUI(timerDuration);
                 timerManager.StartTimer(timerDuration);
+                scoreManager.ResetScore();
                 fliesSpawner.StartSpawning();
+                for (int i = 0; i < frogsArray.Length; i++)
+                {
+                    frogsArray[i].playerInput.ActivateInput();
+                }
                 gameStateInt = 3;
                 break;
             //During Game
@@ -84,6 +93,10 @@ public class GameManager : MonoBehaviour
                 break;
             //Game Ended
             case 4:
+                for (int i = 0; i < frogsArray.Length; i++)
+                {
+                    frogsArray[i].playerInput.DeactivateInput();
+                }
                 fliesSpawner.StopSpawning();
                 int frog;
                 int score;
@@ -100,8 +113,7 @@ public class GameManager : MonoBehaviour
                 gameStateInt = 5;
                 break;
             case 5:
-                //restart
-                //uIManager.SetEnabledResultPanel(text: "",enabled: false);
+                //Result Screen
                 break;
         }
     }

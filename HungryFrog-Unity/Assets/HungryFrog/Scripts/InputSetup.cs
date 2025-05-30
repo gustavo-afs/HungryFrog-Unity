@@ -53,19 +53,23 @@ public class InputSetup : MonoBehaviour
         }
     }
 
-    private bool ValidateInputs()
+    public bool AreControllersReady()
     {
-        if (playerInputs.Count == playersCount)
+        return playerInputs.Count == playersCount;
+    }
+    
+    private void ValidateInputs()
+    {
+        if (AreControllersReady())
         {
+            Debug.Log($"PlayersInput Count: {playerInputs.Count} playersCount {playersCount}");
             List<GameObject> allPlayers = new List<GameObject>();
             foreach (var player in playerInputs)
             {
                 allPlayers.Add(player.gameObject);
             }
             OnAllPlayersReady?.Invoke(allPlayers);
-            return true;
         }
-        return false;
     }
 
     private void UnpairDevice(PlayerInput playerInput)
@@ -97,13 +101,13 @@ public class InputSetup : MonoBehaviour
         return false;
     }
 
-    public void StartInputSearching(int playerCountInput)
+    public void SetupPlayerInputs(int playerCountInput)
     {
-        if (ValidateInputs() == false)
-        {
-            playersCount = playerCountInput;
-            input.Lobby.Enable();
-        }
+        playersCount = playerCountInput;
+    }
+    public void StartInputSearching()
+    {
+        input.Lobby.Enable();
     }
 
     public void StopInputSearching()
