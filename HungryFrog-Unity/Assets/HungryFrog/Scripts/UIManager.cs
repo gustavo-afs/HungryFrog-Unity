@@ -31,16 +31,23 @@ public class UIManager : MonoBehaviour
     private const string timerName = "Timer";
     
     private VisualElement resultPanel;
-    private const string resultPanelName = "ResultPanel";
+    private const string resultPanelName = "GameResult";
     
     private Label resultText;
     private const string resultTextName = "ResultText";
+    
+    private Button restartRoundButton;
+    private const string restartRoundButtonName = "RestartRound";
+    
+    private Button quitToMenuButton;
+    private const string quitToMenuButtonName = "QuitToMenu";
 
     private Label[] scoreLabels;
     
     private void Awake()
     {
         root = UIToolkitObject.GetComponent<UIDocument>().rootVisualElement;
+        
         mainMenu = root.Q(mainMenuName);
         scorePanel = root.Q(scorePanelName);
         startButton = (Button)root.Q(startButtonName);
@@ -50,11 +57,13 @@ public class UIManager : MonoBehaviour
         timer = (Label)scorePanel.Q(timerName);
         resultPanel = root.Q(resultPanelName);
         resultText = (Label)root.Q(resultTextName);
+        restartRoundButton = (Button)root.Q(restartRoundButtonName);
+        quitToMenuButton = (Button)root.Q(quitToMenuButtonName);
         
         scoreLabels = new []{player1Score, player2Score};
     }
 
-    public void InitializeButtons(Action startButtonAction, Action quitButtonAction)
+    public void InitializeButtons(Action startButtonAction, Action quitButtonAction, Action restartRoundAction, Action quitToMenuAction)
     {
         startButton.RegisterCallback<ClickEvent>(evt =>
         {
@@ -76,6 +85,28 @@ public class UIManager : MonoBehaviour
         {
             quitButtonAction();
             Debug.Log("Submitted QuitButton");
+        });
+        
+        restartRoundButton.RegisterCallback<ClickEvent>(evt =>
+        {
+            restartRoundAction();
+            Debug.Log("Clicked RestartRoundButton");
+        });
+        restartRoundButton.RegisterCallback<NavigationSubmitEvent>(evt =>
+        {
+            restartRoundAction();
+            Debug.Log("Submitted RestartRoundButton");
+        });
+        
+        quitToMenuButton.RegisterCallback<ClickEvent>(evt =>
+        {
+            quitToMenuAction();
+            Debug.Log("Clicked QuitToMenuButton");
+        });
+        quitToMenuButton.RegisterCallback<NavigationSubmitEvent>(evt =>
+        {
+            quitToMenuAction();
+            Debug.Log("Submitted QuitToMenuButton");
         });
     }
 
@@ -109,6 +140,10 @@ public class UIManager : MonoBehaviour
     {
         resultPanel.style.display = enabled ? DisplayStyle.Flex : DisplayStyle.None;
         resultText.text = text;
+        if (enabled)
+        {
+            restartRoundButton.Focus();
+        }
     }
     
     public void UpdateTimer(float timeRemaining)

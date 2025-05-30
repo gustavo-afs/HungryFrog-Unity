@@ -9,7 +9,7 @@ public class Frog : MonoBehaviour
     [Header("Systems")]
     private InputAction moveAction;
     private InputAction fireTongueAction;
-    private PlayerInput playerInput;
+    public PlayerInput playerInput;
     public int iDNumber;
     [SerializeField] private AudioSource audioSource;
 
@@ -30,25 +30,6 @@ public class Frog : MonoBehaviour
     private bool isCatching = false;
     private bool isTongueReleasing = false;
     public event Action<int> catchAction;
-
-    void Update()
-    {
-        if (isTongueReleasing)
-        {
-            return;
-        }
-
-        // Vector2 leftStick = inputController.leftStick.ReadValue();
-        //
-        // RotateFrog(leftStick);
-        // MoveTongueScope(leftStick);
-        //
-        // if (inputController.crossButton.wasPressedThisFrame)
-        // {
-        //     isTongueReleasing = true;
-        //     StartCoroutine(TongueAnimation());
-        // }
-    }
 
     private void OnMove(InputAction.CallbackContext context)
     {

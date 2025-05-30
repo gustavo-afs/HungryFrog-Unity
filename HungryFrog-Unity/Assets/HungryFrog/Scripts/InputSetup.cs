@@ -53,7 +53,7 @@ public class InputSetup : MonoBehaviour
         }
     }
 
-    private void ValidateInputs()
+    private bool ValidateInputs()
     {
         if (playerInputs.Count == playersCount)
         {
@@ -63,7 +63,9 @@ public class InputSetup : MonoBehaviour
                 allPlayers.Add(player.gameObject);
             }
             OnAllPlayersReady?.Invoke(allPlayers);
+            return true;
         }
+        return false;
     }
 
     private void UnpairDevice(PlayerInput playerInput)
@@ -97,8 +99,11 @@ public class InputSetup : MonoBehaviour
 
     public void StartInputSearching(int playerCountInput)
     {
-        playersCount = playerCountInput;
-        input.Lobby.Enable();
+        if (ValidateInputs() == false)
+        {
+            playersCount = playerCountInput;
+            input.Lobby.Enable();
+        }
     }
 
     public void StopInputSearching()
