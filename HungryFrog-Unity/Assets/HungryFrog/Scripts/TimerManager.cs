@@ -14,7 +14,6 @@ public class TimerManager : MonoBehaviour
     public void StartTimer(float timerDuration)
     {
         defaultTimerDuration = timerDuration;
-        Debug.Log("default duration"+defaultTimerDuration);
         if (timerCoroutine != null)
         {
             StopCoroutine(timerCoroutine);
@@ -29,7 +28,6 @@ public class TimerManager : MonoBehaviour
         while (currentTimer > 0)
         {
             currentTimer -= Time.deltaTime;
-            Debug.Log("TimerManager: " + currentTimer);
             onTimerUpdate?.Invoke(currentTimer);
             yield return null;
         }
