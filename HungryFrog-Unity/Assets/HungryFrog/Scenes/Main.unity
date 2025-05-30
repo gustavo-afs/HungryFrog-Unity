@@ -891,7 +891,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UIToolkitObject: {fileID: 1642219073}
-  mainPanelText: {fileID: 459423893}
 --- !u!4 &872673193
 Transform:
   m_ObjectHideFlags: 0
@@ -1250,7 +1249,7 @@ MonoBehaviour:
   frogsArray:
   - {fileID: 2124405952}
   - {fileID: 355764820}
-  timerDuration: 60
+  timerDuration: 20
   inputActionAsset: {fileID: -944628639613478452, guid: 6ec755b72c620ae43a68c72e8a8e0099, type: 3}
 --- !u!4 &1496795994
 Transform:

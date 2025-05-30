@@ -29,12 +29,14 @@ public class UIManager : MonoBehaviour
 
     private Label timer;
     private const string timerName = "Timer";
+    
+    private VisualElement resultPanel;
+    private const string resultPanelName = "ResultPanel";
+    
+    private Label resultText;
+    private const string resultTextName = "ResultText";
 
     private Label[] scoreLabels;
-    // Legacy UI
-    [SerializeField] private TMP_Text mainPanelText;
-    //[SerializeField] private TMP_Text timerText;
-    //[SerializeField] private TMP_Text[] scoreLabelArray;
     
     private void Awake()
     {
@@ -46,6 +48,8 @@ public class UIManager : MonoBehaviour
         player1Score = (Label)root.Q(player1ScoreName);
         player2Score = (Label)root.Q(player2ScoreName);
         timer = (Label)scorePanel.Q(timerName);
+        resultPanel = root.Q(resultPanelName);
+        resultText = (Label)root.Q(resultTextName);
         
         scoreLabels = new []{player1Score, player2Score};
     }
@@ -78,8 +82,7 @@ public class UIManager : MonoBehaviour
     public void SetEnabledMainMenu(bool enabled)
     {
         mainMenu.style.display = enabled ? DisplayStyle.Flex : DisplayStyle.None;
-
-        // Define the focus on the first focusable child element
+        
         if (enabled && mainMenu.childCount > 0)
         {
             mainMenu[0]?.Focus();
@@ -93,7 +96,7 @@ public class UIManager : MonoBehaviour
     
     public void ResetUI(float defaultTime)
     {
-        mainPanelText.text = "";
+        Debug.Log("Need to implement reset main panel");
         timer.text = Mathf.CeilToInt(defaultTime).ToString();
 
         for (int i = 0; i < scoreLabels.Length; i++)
@@ -102,9 +105,10 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    public void UpdateMainPanelText(string text)
+    public void SetEnabledResultPanel(string text, bool enabled)
     {
-        mainPanelText.text = text;
+        resultPanel.style.display = enabled ? DisplayStyle.Flex : DisplayStyle.None;
+        resultText.text = text;
     }
     
     public void UpdateTimer(float timeRemaining)

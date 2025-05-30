@@ -84,18 +84,24 @@ public class GameManager : MonoBehaviour
                 break;
             //Game Ended
             case 4:
+                fliesSpawner.StopSpawning();
                 int frog;
                 int score;
                 (frog, score) = scoreManager.GetWinner();
 
                 if (frog == -1 || score == -1)
                 {
-                    uIManager.UpdateMainPanelText("Draw");
+                    uIManager.SetEnabledResultPanel("Draw!", true);
                 }
                 else
                 {
-                    uIManager.UpdateMainPanelText($"The Winner is the Frog {frog} with Score {score}");
+                    uIManager.SetEnabledResultPanel($"The Winner is: Frog {frog} \n\n Score: {score}", true);
                 }
+                gameStateInt = 5;
+                break;
+            case 5:
+                //restart
+                //uIManager.SetEnabledResultPanel(text: "",enabled: false);
                 break;
         }
     }

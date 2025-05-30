@@ -34,6 +34,11 @@ public class FliesSpawner : MonoBehaviour
         StartCoroutine(Spawner());
     }
 
+    public void StopSpawning()
+    {
+        StopAllCoroutines();
+    }
+
     IEnumerator Spawner()
     {
         do

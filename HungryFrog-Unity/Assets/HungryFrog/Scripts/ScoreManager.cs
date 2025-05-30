@@ -82,7 +82,7 @@ public class ScoreManager
         }
         else
         {
-            return (winnerID, highestScore);
+            return (winnerID+1, highestScore);
         }
     }
 }
