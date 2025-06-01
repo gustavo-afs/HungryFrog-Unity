@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using UnityEngine;
+
 public class ScoreManager
 {
     private int[] scoreArray;
-
+    
     public void InitializeScore(int playersQuantity)
     {
         scoreArray = new int[playersQuantity];
@@ -16,7 +16,7 @@ public class ScoreManager
             scoreArray[i] = 0;
         }
     }
-
+    
     public bool TryAddScore(int playerID)
     {
         if (IsValidPlayer(playerID))
@@ -24,45 +24,33 @@ public class ScoreManager
             scoreArray[playerID]++;
             return true;
         }
-        else
-        {
-            Debug.LogWarning($"Invalid player ID: {playerID}");
-            return false;
-        }
+        Debug.LogWarning($"Invalid player ID: {playerID}");
+        return false;
     }
     
     public bool TryGetScore(int playerID, out int score)
     {
-
         if (IsValidPlayer(playerID))
         {
             score = scoreArray[playerID];
             return true;
         }
-        else
-        {
-            Debug.LogWarning($"Invalid player ID: {playerID}");
-            score = -1;
-            return false;
-        }
+        Debug.LogWarning($"Invalid player ID: {playerID}");
+        score = -1;
+        return false;
     }
 
     private bool IsValidPlayer(int playerID)
     {
-        if (playerID >= 0 && playerID < scoreArray.Length)
-        {
-            return true;
-        }
-
-        return false;
+        return playerID >= 0 && playerID < scoreArray.Length;
     }
-
-    public (int playerID, int score)  GetWinner()
+    
+    public (int playerID, int score) GetWinner()
     {
         int highestScore = -1;
         int winnerID = -1;
         bool isDraw = false;
-        
+
         for (int i = 0; i < scoreArray.Length; i++)
         {
             if (scoreArray[i] > highestScore)
@@ -70,7 +58,8 @@ public class ScoreManager
                 highestScore = scoreArray[i];
                 winnerID = i;
                 isDraw = false;
-            } else if (scoreArray[i] == highestScore)
+            }
+            else if (scoreArray[i] == highestScore)
             {
                 isDraw = true;
             }

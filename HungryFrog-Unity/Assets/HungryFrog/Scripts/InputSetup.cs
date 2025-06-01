@@ -8,9 +8,12 @@ public class InputSetup : MonoBehaviour
     private GameInputs input;
     private List<PlayerInput> playerInputs = new List<PlayerInput>();
     [SerializeField] private GameObject playerInputPrefab;
+
     private int playersCount;
-    public event Action<List<GameObject>> OnAllPlayersReady;
     
+    public event Action<List<GameObject>> OnAllPlayersReady;
+    public event Action<int> OnPlayersUpdated;
+
     public void Awake()
     {
         input = new GameInputs();
@@ -18,18 +21,16 @@ public class InputSetup : MonoBehaviour
     }
 
     private void OnDisable()
-    {   
+    {
         input.Lobby.ToggleJoin.performed -= OnToggleJoinPerformed;
         input.Dispose();
     }
-
+    
     private void OnToggleJoinPerformed(InputAction.CallbackContext callbackContext)
     {
         var device = callbackContext.control.device;
 
-        PlayerInput playerInput;
-        
-        if (IsDeviceAssigned(device, out playerInput))
+        if (IsDeviceAssigned(device, out PlayerInput playerInput))
         {
             UnpairDevice(playerInput);
         }
@@ -45,6 +46,7 @@ public class InputSetup : MonoBehaviour
         if (playerInput.user.valid)
         {
             playerInputs.Add(playerInput);
+            OnPlayersUpdated?.Invoke(playerInputs.Count);
             ValidateInputs();
         }
         else
@@ -76,17 +78,13 @@ public class InputSetup : MonoBehaviour
     {
         Destroy(playerInput.gameObject);
         playerInputs.Remove(playerInput);
+        OnPlayersUpdated?.Invoke(playerInputs.Count);
     }
 
     private bool IsDeviceAssigned(InputDevice device, out PlayerInput assignedPlayerInput)
     {
         assignedPlayerInput = null;
-        
-        if (playerInputs.Count == 0)
-        {
-            return false;
-        }
-        
+
         foreach (var playerInput in playerInputs)
         {
             foreach (var playerInputDevice in playerInput.devices)
@@ -101,10 +99,29 @@ public class InputSetup : MonoBehaviour
         return false;
     }
 
+    private void ValidateInputs()
+    {
+        if (AreControllersReady())
+        {
+            List<GameObject> allPlayers = new();
+            foreach (var player in playerInputs)
+            {
+                allPlayers.Add(player.gameObject);
+            }
+            OnAllPlayersReady?.Invoke(allPlayers);
+        }
+    }
+
+    public bool AreControllersReady()
+    {
+        return playerInputs.Count == playersCount;
+    }
+
     public void SetupPlayerInputs(int playerCountInput)
     {
         playersCount = playerCountInput;
     }
+
     public void StartInputSearching()
     {
         input.Lobby.Enable();

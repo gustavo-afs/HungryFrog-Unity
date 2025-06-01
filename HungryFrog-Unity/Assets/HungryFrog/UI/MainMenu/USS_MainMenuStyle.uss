@@ -46,3 +46,49 @@
     text-overflow: ellipsis;
     -unity-font-definition: url("project://database/Assets/HungryFrog/UI/Fonts/PressStart2P-Regular.ttf?fileID=12800000&guid=a1e95d42e0b4041408de2330d4ca3282&type=3#PressStart2P-Regular");
 }
+
+.menu-toggle {
+    width: 300px;
+    height: 300px;
+    -unity-text-align: middle-center;
+    background-color: rgba(255, 255, 255, 0);
+    background-image: url("project://database/Assets/HungryFrog/Art/UI/SPR_UI_ScorePanel.png?fileID=21300000&guid=94c735b456c8e14449821a602a54a2c1&type=3#SPR_UI_ScorePanel");
+}
+
+.menu-toggle > .unity-toggle__input {
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 6px;
+    border-width: 0;
+    border-color: transparent;
+    border-style: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.menu-toggle > .unity-toggle__input > #unity-checkmark {
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0);
+    width: 100%;
+    height: 100%;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    padding: 0;
+    margin: 0;
+    border-width: 0;
+    border-color: transparent;
+    border-radius: 0;
+}
+
+.menu-toggle:checked > .unity-toggle__input > #unity-checkmark {
+    background-image: url("project://database/Assets/HungryFrog/Art/UI/SPR_UI_FrogIcon.png?fileID=21300000&guid=05dc07fb5437b9741966dd5c00e1ea30&type=3#SPR_UI_FrogIcon");
+    background-size: 60% 60%;
+}

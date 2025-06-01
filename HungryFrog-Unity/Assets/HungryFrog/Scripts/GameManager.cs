@@ -12,19 +12,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Frog[] frogsArray;
     [SerializeField] private float timerDuration = 60;
     [SerializeField] private InputActionAsset inputActionAsset;
-    
+
     private int gameStateInt;
-    
+
     private void Start()
     {
-        uIManager.InitializeButtons(() => gameStateInt = -1, () => Application.Quit(), () => gameStateInt = 2, () => gameStateInt = -3);
+        uIManager.InitializeButtons(
+            () => gameStateInt = -1,
+            () => Application.Quit(),
+            () => gameStateInt = 2,
+            () => gameStateInt = -3
+        );
         scoreManager.InitializeScore(frogsArray.Length);
         timerManager.onTimerEnded += () => gameStateInt = 4;
-        timerManager.onTimerUpdate += (timerValue) =>
-        {
-            uIManager.UpdateTimer(timerValue);
-        };
-
+        timerManager.onTimerUpdate += (timerValue) => uIManager.UpdateTimer(timerValue);
         for (int i = 0; i < frogsArray.Length; i++)
         {
             frogsArray[i].iDNumber = i;
@@ -39,6 +40,9 @@ public class GameManager : MonoBehaviour
                 }
             };
         }
+        
+        inputSetup.OnPlayersUpdated += UpdateToggles;
+        
         gameStateInt = -3;
     }
 
@@ -46,7 +50,7 @@ public class GameManager : MonoBehaviour
     {
         GameStates();
     }
-
+    
     void GameStates()
     {
         //TODO: Improve this state machine
@@ -54,13 +58,12 @@ public class GameManager : MonoBehaviour
         switch (gameStateInt)
         {
             case -3:
-                uIManager.SetEnabledResultPanel(text: "",enabled: false);
+                uIManager.SetEnabledResultPanel(text: "", enabled: false);
                 uIManager.SetEnabledMainMenu(true);
                 inputSetup.SetupPlayerInputs(frogsArray.Length);
                 gameStateInt = -2;
                 break;
             case -2:
-                // Waiting for menu interactions
                 break;
             case -1:
                 uIManager.SetEnabledMainMenu(false);
@@ -71,53 +74,55 @@ public class GameManager : MonoBehaviour
                 }
                 inputSetup.OnAllPlayersReady += AssignPlayerInputsToFrogs;
                 inputSetup.StartInputSearching();
+                uIManager.SetEnabledInputSelectionPanel(true);
                 gameStateInt = 0;
                 break;
             //StartGame
             case 2:
+                uIManager.SetEnabledInputSelectionPanel(false);
                 uIManager.SetEnabledScorePanel(true);
-                uIManager.SetEnabledResultPanel(text: "",enabled: false);
+                uIManager.SetEnabledResultPanel("", false);
                 uIManager.ResetUI(timerDuration);
                 timerManager.StartTimer(timerDuration);
                 scoreManager.ResetScore();
                 fliesSpawner.StartSpawning();
-                for (int i = 0; i < frogsArray.Length; i++)
+
+                foreach (var frog in frogsArray)
                 {
-                    frogsArray[i].playerInput.ActivateInput();
+                    frog.playerInput.ActivateInput();
                 }
+
                 gameStateInt = 3;
                 break;
-            //During Game
             case 3:
-                //Nothing
                 break;
-            //Game Ended
             case 4:
-                for (int i = 0; i < frogsArray.Length; i++)
+                foreach (var frogss in frogsArray)
                 {
-                    frogsArray[i].playerInput.DeactivateInput();
+                    frogss.playerInput.DeactivateInput();
                 }
-                fliesSpawner.StopSpawning();
-                int frog;
-                int score;
-                (frog, score) = scoreManager.GetWinner();
 
-                if (frog == -1 || score == -1)
+                fliesSpawner.StopSpawning();
+
+                (int froggy, int score) = scoreManager.GetWinner();
+
+                string result;
+                if (froggy == -1 || score == -1)
                 {
-                    uIManager.SetEnabledResultPanel("Draw!", true);
+                    result = "Draw!";
                 }
                 else
                 {
-                    uIManager.SetEnabledResultPanel($"The Winner is: Frog {frog} \n\n Score: {score}", true);
+                    result = $"The Winner is: Frog {froggy} \n\n Score: {score}";                    
                 }
+                uIManager.SetEnabledResultPanel(result, true);
                 gameStateInt = 5;
                 break;
             case 5:
-                //Result Screen
                 break;
         }
     }
-
+    
     private void AssignPlayerInputsToFrogs(List<GameObject> playersInput)
     {
         for (int i = 0; i < frogsArray.Length; i++)
@@ -125,8 +130,16 @@ public class GameManager : MonoBehaviour
             playersInput[i].transform.SetParent(frogsArray[i].transform);
             frogsArray[i].SetupFrog(playersInput[i].GetComponent<PlayerInput>());
         }
+
         inputSetup.StopInputSearching();
         inputSetup.OnAllPlayersReady -= AssignPlayerInputsToFrogs;
-        gameStateInt = 2;
+    }
+    
+    private void UpdateToggles(int joinedPlayerCount)
+    {
+        for (int i = 0; i < frogsArray.Length; i++)
+        {
+            uIManager.SetFrogToggle(i, i < joinedPlayerCount);
+        }
     }
 }
