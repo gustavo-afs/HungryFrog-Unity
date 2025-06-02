@@ -615,6 +615,15 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ConfirmInputs"",
+                    ""type"": ""Button"",
+                    ""id"": ""ec50f2cc-ca14-4194-a556-5d26c56eddd0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -626,6 +635,17 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ToggleJoin"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""88c5916b-6b67-49e1-b870-23bacb42831b"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ConfirmInputs"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -697,6 +717,7 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
         // Lobby
         m_Lobby = asset.FindActionMap("Lobby", throwIfNotFound: true);
         m_Lobby_ToggleJoin = m_Lobby.FindAction("ToggleJoin", throwIfNotFound: true);
+        m_Lobby_ConfirmInputs = m_Lobby.FindAction("ConfirmInputs", throwIfNotFound: true);
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
@@ -979,6 +1000,7 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Lobby;
     private List<ILobbyActions> m_LobbyActionsCallbackInterfaces = new List<ILobbyActions>();
     private readonly InputAction m_Lobby_ToggleJoin;
+    private readonly InputAction m_Lobby_ConfirmInputs;
     /// <summary>
     /// Provides access to input actions defined in input action map "Lobby".
     /// </summary>
@@ -994,6 +1016,10 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Lobby/ToggleJoin".
         /// </summary>
         public InputAction @ToggleJoin => m_Wrapper.m_Lobby_ToggleJoin;
+        /// <summary>
+        /// Provides access to the underlying input action "Lobby/ConfirmInputs".
+        /// </summary>
+        public InputAction @ConfirmInputs => m_Wrapper.m_Lobby_ConfirmInputs;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1023,6 +1049,9 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
             @ToggleJoin.started += instance.OnToggleJoin;
             @ToggleJoin.performed += instance.OnToggleJoin;
             @ToggleJoin.canceled += instance.OnToggleJoin;
+            @ConfirmInputs.started += instance.OnConfirmInputs;
+            @ConfirmInputs.performed += instance.OnConfirmInputs;
+            @ConfirmInputs.canceled += instance.OnConfirmInputs;
         }
 
         /// <summary>
@@ -1037,6 +1066,9 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
             @ToggleJoin.started -= instance.OnToggleJoin;
             @ToggleJoin.performed -= instance.OnToggleJoin;
             @ToggleJoin.canceled -= instance.OnToggleJoin;
+            @ConfirmInputs.started -= instance.OnConfirmInputs;
+            @ConfirmInputs.performed -= instance.OnConfirmInputs;
+            @ConfirmInputs.canceled -= instance.OnConfirmInputs;
         }
 
         /// <summary>
@@ -1269,6 +1301,13 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleJoin(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ConfirmInputs" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnConfirmInputs(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Gameplay" which allows adding and removing callbacks.

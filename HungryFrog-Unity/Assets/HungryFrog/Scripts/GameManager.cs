@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
+    private GameInputs input;
     private ScoreManager scoreManager = new();
     [SerializeField] private TimerManager timerManager;
     [SerializeField] private UIManager uIManager;
@@ -11,17 +13,33 @@ public class GameManager : MonoBehaviour
     [SerializeField] private FliesSpawner fliesSpawner;
     [SerializeField] private Frog[] frogsArray;
     [SerializeField] private float timerDuration = 60;
-    [SerializeField] private InputActionAsset inputActionAsset;
 
     private int gameStateInt;
 
+
+    private string awaitingInputText = "Press EAST Button to Join or Leave Game";
+    private string confirmStart = "Press SOUTH button to start the game";
+
+    private void Awake()
+    {
+        input = new GameInputs();
+    }
+
     private void Start()
     {
+        input.Lobby.ConfirmInputs.performed += ctx =>
+        {
+            if (gameStateInt == 0)
+            {
+                gameStateInt = 1;
+            }
+        };
+        
         uIManager.InitializeButtons(
-            () => gameStateInt = -1,
-            () => Application.Quit(),
-            () => gameStateInt = 2,
-            () => gameStateInt = -3
+            startButtonAction: () => gameStateInt = -2,
+            quitButtonAction: () => Application.Quit(),
+            restartRoundAction: () => gameStateInt = 2,
+            quitToMenuAction: () => gameStateInt = -4
         );
         scoreManager.InitializeScore(frogsArray.Length);
         timerManager.onTimerEnded += () => gameStateInt = 4;
@@ -43,7 +61,7 @@ public class GameManager : MonoBehaviour
         
         inputSetup.OnPlayersUpdated += UpdateToggles;
         
-        gameStateInt = -3;
+        gameStateInt = -4;
     }
 
     private void Update()
@@ -55,27 +73,53 @@ public class GameManager : MonoBehaviour
     {
         //TODO: Improve this state machine
         //TODO: Add Pause
+        Debug.Log(gameStateInt);
         switch (gameStateInt)
         {
-            case -3:
+            case -4:
                 uIManager.SetEnabledResultPanel(text: "", enabled: false);
                 uIManager.SetEnabledMainMenu(true);
                 inputSetup.SetupPlayerInputs(frogsArray.Length);
-                gameStateInt = -2;
+                gameStateInt = -3;
+                break;
+            case -3:
                 break;
             case -2:
-                break;
-            case -1:
                 uIManager.SetEnabledMainMenu(false);
                 if (inputSetup.AreControllersReady())
                 {
                     gameStateInt = 2;
                     break;
                 }
+                input.Lobby.Enable();
+                input.Lobby.ToggleJoin.performed += inputSetup.OnToggleJoinPerformed;
+                inputSetup.OnAllPlayersReady -= AssignPlayerInputsToFrogs; // previne múltiplos binds
                 inputSetup.OnAllPlayersReady += AssignPlayerInputsToFrogs;
-                inputSetup.StartInputSearching();
                 uIManager.SetEnabledInputSelectionPanel(true);
-                gameStateInt = 0;
+
+                gameStateInt = -1;
+                break;
+            case -1:
+                inputSetup.OnAllPlayersReady -= AssignPlayerInputsToFrogs;
+                inputSetup.OnAllPlayersReady += AssignPlayerInputsToFrogs;
+
+                if (inputSetup.AreControllersReady())
+                {
+                    gameStateInt = 0;
+                }
+                uIManager.SetInputSelectionMenuText(awaitingInputText);
+                break;  
+            case 0:
+                if (!inputSetup.AreControllersReady())
+                {
+                    gameStateInt = -1;
+                }
+                uIManager.SetInputSelectionMenuText(confirmStart);
+                break;
+            case 1:
+                input.Lobby.ToggleJoin.performed -= inputSetup.OnToggleJoinPerformed;
+                input.Lobby.Disable();
+                gameStateInt = 2;
                 break;
             //StartGame
             case 2:
@@ -86,34 +130,32 @@ public class GameManager : MonoBehaviour
                 timerManager.StartTimer(timerDuration);
                 scoreManager.ResetScore();
                 fliesSpawner.StartSpawning();
-
                 foreach (var frog in frogsArray)
                 {
-                    frog.playerInput.ActivateInput();
+                    // frog.playerInput.ActivateInput();
+                    frog.playerInput.actions.Enable();
                 }
-
                 gameStateInt = 3;
                 break;
             case 3:
                 break;
             case 4:
-                foreach (var frogss in frogsArray)
+                foreach (var frog in frogsArray)
                 {
-                    frogss.playerInput.DeactivateInput();
+                    // frog.playerInput.DeactivateInput();
+                    
+                    frog.playerInput.actions.Disable();
                 }
-
                 fliesSpawner.StopSpawning();
-
-                (int froggy, int score) = scoreManager.GetWinner();
-
+                (int frogID, int score) = scoreManager.GetWinner();
                 string result;
-                if (froggy == -1 || score == -1)
+                if (frogID == -1 || score == -1)
                 {
                     result = "Draw!";
                 }
                 else
                 {
-                    result = $"The Winner is: Frog {froggy} \n\n Score: {score}";                    
+                    result = $"The Winner is: Frog {frogID} \n\n Score: {score}";                    
                 }
                 uIManager.SetEnabledResultPanel(result, true);
                 gameStateInt = 5;
@@ -130,9 +172,6 @@ public class GameManager : MonoBehaviour
             playersInput[i].transform.SetParent(frogsArray[i].transform);
             frogsArray[i].SetupFrog(playersInput[i].GetComponent<PlayerInput>());
         }
-
-        inputSetup.StopInputSearching();
-        inputSetup.OnAllPlayersReady -= AssignPlayerInputsToFrogs;
     }
     
     private void UpdateToggles(int joinedPlayerCount)

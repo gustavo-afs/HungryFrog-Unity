@@ -45,6 +45,8 @@ public class UIManager : MonoBehaviour
     private VisualElement inputSelectionPanel;
     private const string inputSelectionPanelName = "InputSelectionMenu";
 
+    private Label inputSelectionMenuText;
+    private const string inputSelectionMenuTextName = "InputSelectionMenuText";
     private Toggle frog1Toggle;
     private const string frog1ToggleName = "Frog1Toggle";
 
@@ -71,6 +73,7 @@ public class UIManager : MonoBehaviour
         restartRoundButton = (Button)root.Q(restartRoundButtonName);
         quitToMenuButton = (Button)root.Q(quitToMenuButtonName);
         inputSelectionPanel = root.Q(inputSelectionPanelName);
+        inputSelectionMenuText = (Label)root.Q(inputSelectionMenuTextName);
         frog1Toggle = (Toggle)root.Q(frog1ToggleName);
         frog2Toggle = (Toggle)root.Q(frog2ToggleName);
         
@@ -91,6 +94,11 @@ public class UIManager : MonoBehaviour
 
         quitToMenuButton.RegisterCallback<ClickEvent>(evt => quitToMenuAction());
         quitToMenuButton.RegisterCallback<NavigationSubmitEvent>(evt => quitToMenuAction());
+    }
+
+    public void SetInputSelectionMenuText(string text)
+    {
+        inputSelectionMenuText.text = text;
     }
 
     public void SetEnabledMainMenu(bool enabled)

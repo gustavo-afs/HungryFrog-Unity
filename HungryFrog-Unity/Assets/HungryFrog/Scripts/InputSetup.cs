@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 
 public class InputSetup : MonoBehaviour
 {
-    private GameInputs input;
     private List<PlayerInput> playerInputs = new List<PlayerInput>();
     [SerializeField] private GameObject playerInputPrefab;
 
@@ -14,19 +13,7 @@ public class InputSetup : MonoBehaviour
     public event Action<List<GameObject>> OnAllPlayersReady;
     public event Action<int> OnPlayersUpdated;
 
-    public void Awake()
-    {
-        input = new GameInputs();
-        input.Lobby.ToggleJoin.performed += OnToggleJoinPerformed;
-    }
-
-    private void OnDisable()
-    {
-        input.Lobby.ToggleJoin.performed -= OnToggleJoinPerformed;
-        input.Dispose();
-    }
-    
-    private void OnToggleJoinPerformed(InputAction.CallbackContext callbackContext)
+    public void OnToggleJoinPerformed(InputAction.CallbackContext callbackContext)
     {
         var device = callbackContext.control.device;
 
@@ -53,11 +40,6 @@ public class InputSetup : MonoBehaviour
         {
             Destroy(playerInput.gameObject);
         }
-    }
-
-    public bool AreControllersReady()
-    {
-        return playerInputs.Count == playersCount;
     }
     
     private void ValidateInputs()
@@ -99,19 +81,6 @@ public class InputSetup : MonoBehaviour
         return false;
     }
 
-    private void ValidateInputs()
-    {
-        if (AreControllersReady())
-        {
-            List<GameObject> allPlayers = new();
-            foreach (var player in playerInputs)
-            {
-                allPlayers.Add(player.gameObject);
-            }
-            OnAllPlayersReady?.Invoke(allPlayers);
-        }
-    }
-
     public bool AreControllersReady()
     {
         return playerInputs.Count == playersCount;
@@ -120,15 +89,5 @@ public class InputSetup : MonoBehaviour
     public void SetupPlayerInputs(int playerCountInput)
     {
         playersCount = playerCountInput;
-    }
-
-    public void StartInputSearching()
-    {
-        input.Lobby.Enable();
-    }
-
-    public void StopInputSearching()
-    {
-        input.Lobby.Disable();
     }
 }
