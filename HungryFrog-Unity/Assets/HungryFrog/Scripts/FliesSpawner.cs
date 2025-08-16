@@ -12,7 +12,6 @@ public class FliesSpawner : MonoBehaviour
     [SerializeField] private float flylifetimeRange = 5f;
     private ObjectPool<GameObject> fliesPool;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         fliesPool = new ObjectPool<GameObject>(
@@ -25,8 +24,6 @@ public class FliesSpawner : MonoBehaviour
             maxSize: 20
             );
     }
-
-    // Update is called once per frame
 
     public void StartSpawning()
     {

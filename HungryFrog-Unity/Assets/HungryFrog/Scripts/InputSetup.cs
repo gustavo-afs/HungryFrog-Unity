@@ -5,13 +5,13 @@ using UnityEngine.InputSystem;
 
 public class InputSetup : MonoBehaviour
 {
-    private List<PlayerInput> playerInputs = new List<PlayerInput>();
+    private PlayerInput[] playerInputs;
     [SerializeField] private GameObject playerInputPrefab;
 
     private int playersCount;
     
     public event Action<List<GameObject>> OnAllPlayersReady;
-    public event Action<int> OnPlayersUpdated;
+    public event Action<int /*PlayerID*/,bool /*State*/> OnPlayersUpdated;
 
     public void OnToggleJoinPerformed(InputAction.CallbackContext callbackContext)
     {
@@ -32,9 +32,16 @@ public class InputSetup : MonoBehaviour
         var playerInput = PlayerInput.Instantiate(playerInputPrefab, pairWithDevice: device);
         if (playerInput.user.valid)
         {
-            playerInputs.Add(playerInput);
-            OnPlayersUpdated?.Invoke(playerInputs.Count);
-            ValidateInputs();
+            for (int i = 0; i < playersCount; i++)
+            {
+                if (playerInputs[i] == null)
+                {
+                    playerInputs[i] = playerInput;
+                    OnPlayersUpdated?.Invoke(i,true);
+                    ValidateInputs();
+                    return;
+                }
+            }
         }
         else
         {
@@ -46,7 +53,6 @@ public class InputSetup : MonoBehaviour
     {
         if (AreControllersReady())
         {
-            Debug.Log($"PlayersInput Count: {playerInputs.Count} playersCount {playersCount}");
             List<GameObject> allPlayers = new List<GameObject>();
             foreach (var player in playerInputs)
             {
@@ -58,23 +64,37 @@ public class InputSetup : MonoBehaviour
 
     private void UnpairDevice(PlayerInput playerInput)
     {
-        Destroy(playerInput.gameObject);
-        playerInputs.Remove(playerInput);
-        OnPlayersUpdated?.Invoke(playerInputs.Count);
+        for (int i = 0; i < playersCount; i++)
+        {
+            if (playerInputs[i] == playerInput)
+            {
+                playerInputs[i] = null;
+                Destroy(playerInput.gameObject);
+                OnPlayersUpdated?.Invoke(i,false);
+            }
+        }
     }
 
     private bool IsDeviceAssigned(InputDevice device, out PlayerInput assignedPlayerInput)
     {
         assignedPlayerInput = null;
 
-        foreach (var playerInput in playerInputs)
+        if (playerInputs == null)
         {
-            foreach (var playerInputDevice in playerInput.devices)
+            return false;
+        }
+
+        for (int i = 0; i < playerInputs.Length; i++)
+        {
+            if (playerInputs[i] != null)
             {
-                if (playerInputDevice == device)
+                foreach (var playerInputDevice in playerInputs[i].devices)
                 {
-                    assignedPlayerInput = playerInput;
-                    return true;
+                    if (playerInputDevice == device)
+                    {
+                        assignedPlayerInput = playerInputs[i];
+                        return true;
+                    }
                 }
             }
         }
@@ -83,11 +103,31 @@ public class InputSetup : MonoBehaviour
 
     public bool AreControllersReady()
     {
-        return playerInputs.Count == playersCount;
+        for (int i = 0; i < playerInputs.Length; i++)
+        {
+            var playerInput = playerInputs[i];
+
+            if (playerInput == null)
+            {
+                return false;
+            }
+
+            if (!playerInput.user.valid)
+            {
+                return false;
+            }
+            
+            if (playerInputs[i].devices.Count == 0)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void SetupPlayerInputs(int playerCountInput)
     {
         playersCount = playerCountInput;
+        playerInputs = new PlayerInput[playersCount];
     }
 }

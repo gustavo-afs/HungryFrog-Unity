@@ -40,7 +40,7 @@ public class Frog : MonoBehaviour
 
     private void OnMoveStop(InputAction.CallbackContext context)
     {
-        MoveTongueScope(Vector2.zero); // Reseta a posição
+        MoveTongueScope(Vector2.zero);
     }
 
     private void OnFire(InputAction.CallbackContext context)

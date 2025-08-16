@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour
     {
         //TODO: Improve this state machine
         //TODO: Add Pause
-        Debug.Log(gameStateInt);
+        //Debug.Log(gameStateInt);
         switch (gameStateInt)
         {
             case -4:
@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
                 }
                 input.Lobby.Enable();
                 input.Lobby.ToggleJoin.performed += inputSetup.OnToggleJoinPerformed;
-                inputSetup.OnAllPlayersReady -= AssignPlayerInputsToFrogs; // previne múltiplos binds
+                inputSetup.OnAllPlayersReady -= AssignPlayerInputsToFrogs;
                 inputSetup.OnAllPlayersReady += AssignPlayerInputsToFrogs;
                 uIManager.SetEnabledInputSelectionPanel(true);
 
@@ -143,8 +143,6 @@ public class GameManager : MonoBehaviour
             case 4:
                 foreach (var frog in frogsArray)
                 {
-                    // frog.playerInput.DeactivateInput();
-                    
                     frog.playerInput.actions.Disable();
                 }
                 fliesSpawner.StopSpawning();
@@ -175,11 +173,8 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    private void UpdateToggles(int joinedPlayerCount)
+    private void UpdateToggles(int playerPostion, bool state)
     {
-        for (int i = 0; i < frogsArray.Length; i++)
-        {
-            uIManager.SetFrogToggle(i, i < joinedPlayerCount);
-        }
+        uIManager.SetFrogToggle(playerPostion, state);
     }
 }
