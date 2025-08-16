@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour
         switch (gameStateInt)
         {
             case -4:
+                uIManager.SetEnabledScorePanel(false);
                 uIManager.SetEnabledResultPanel(text: "", enabled: false);
                 uIManager.SetEnabledMainMenu(true);
                 inputSetup.SetupPlayerInputs(frogsArray.Length);
